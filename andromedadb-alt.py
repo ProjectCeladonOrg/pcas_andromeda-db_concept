@@ -6,6 +6,9 @@ import uuid
 import zlib
 
 
+def dict_to_bin(input_dict):
+    return str(json.dump(input_dict)).encode()
+
 class AndromedaDB:
     nonce = 99999999999
 
@@ -20,8 +23,11 @@ class AndromedaDB:
 
         def insert(self, serial, title, data):
             doc_hash = hashlib.sha256(data).digest()
-            doc_hexhash = hashlib.sha256(data).hexdigest()
-            doc_data = {'serial':serial, 'title': title, 'data':data, 'hash': doc_hash, 'nonce': gen_nonce}
+            doc_digest = hashlib.sha256(data).hexdigest()
+            doc_record = {'serial':serial, 'title': title, 'data':data, 'hash': doc_hash, 'nonce': gen_nonce}
+            # TODO: pickles must be signed!
+            pickle.dump(dict_to_bin(doc_record), open(doc_digest, 'wb'))
+            return {'serial': serial, 'digest': doc_digest)
 
         def extract( self):
             TODO: accept either title or serial as input to exctact a document
