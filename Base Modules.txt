@@ -1,0 +1,74 @@
+PCAS comes with a few base modules.  These are prerequisites for all other
+modules that come from Project Celadon.  They are:
+
+MODULE                    DESCRIPTION
+==========                ==========
+pcas_core                 Installs Django, a web server, a login landing page
+                          configured to use local PAM by default, and a home
+                          page with a menu bar featuring only About; also
+                          includes installer and updating services.
+
+pcas_andromeda-db         The graph database used to store attributes and
+                          relationships relevant to PCAS
+
+pcas_settings             Provides the Settings menu option and auto-detects
+                          relevant settings modules; default settings options
+                          include only home page appearance and update branch
+                          preferences
+
+pcas_login                Provides login AAA configuration options
+
+pcas_(ldap/iam/sqlauth)   Provides Auth backends LDAP,
+                          Project Celadon I Am Protocl, and MySQL Auth
+
+pcas_sso-connector        Provides single sign on via CAS, Shibboleth, WSO2, or
+                          Univention implementation
+
+pcas_pickler              Microservice that provides pickle binaries for callers
+
+pcas_converter            Microservice that content between MIME types
+
+pcas_parser               Microservice that parses and formats data.  Includes
+                          tools for serial (DB9, USB) WiFi and other devices, as
+                          well as an OCR pipeline
+
+pcas_ML-connector         Microservice that connects via ONNX to various ML
+                          platforms; includes machine vision services
+
+pcas_openstack-connector  Connector for on-site OpenStack private cloud
+
+pcas_kubernetes           Connector for on-site Kubernetes services
+
+pcas_comms-Connector      Connector (meta wrapper) for whatever messaging
+                          platform is installed.  Rocket.chat is supported
+
+pcas_crypto               Provides cryptography services and connection with CA
+
+Any of the above modules can be replaced with a third party module (except
+pcas_core) and still be PCAS.  Third party modules can only be supported by the
+third-party vendor.
+
+Other modules:
+pcas_enrollment
+pcas_accounting
+pcas_meeting      <-- presentor and provider of meeting services; relys on
+                      time-keeper and comms-Connector
+pcas-time-keeper  <-- complex module that provides time-tracking backend
+                      for everything.
+pcas_students     <-- presenter for student assignments and progress for
+                      students and parents
+pcas_staff        <-- HR and other faculty/staff services
+pcas_lessons      <-- lesson planning and assignment module
+pcas_classroom    <-- Presents lessons to students
+pcas_teacher      <-- Teacher interface for teaching and evaluation
+pcas_rocket-chat  <-- messaging platform: voice, video, messaging
+pcas_payroll      <-- connects to accounting for payroll functions
+pcas_fundraising  <-- connects to accounting for fundraising functions
+pcas_food-service <-- All things food service: menu, ordering, POS connector
+pcas_POS          <-- POS services
+pcas_identity     <-- specifically identity management, including machine
+                      vision connector
+pcas_access-control   Access control provider for data and physical systems;
+                      tied to sso-connector
+pcas_emr          <-- EMR connector for on-site medical services
+pcas_counciling

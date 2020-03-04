@@ -1,0 +1,56 @@
+Modules are imported via compressed pickle files.  The compressed file has the
+structure:
+
+module_name.tlz4.blkar
+  |
+  |--> ./cert
+  |     |
+  |     |--> <module_name>.cert <-- pki encrypted certificate for this package
+  |
+  |--> ./data
+  |     |
+  |     |--> <module_name>.osd  <-- certificate signed OS dependencies (optional)
+  |     |--> <module_name>.pcd  <-- certificate signed PCAS dependencies (optional)
+  |     |--> <module_name>.ind  <-- certificate signed index of the package
+  |     |--> <module_name>.pth  <-- certificate signed install paths
+  |     |--> <module_name>.sel  <-- certificate signed SELinux context script
+  |
+  |--> ./module
+        |
+        |--> 00.dat             <-- certificate encrypted 4MiB sliced pickle
+        |--> 01.dat
+        |--> nn.dat
+
+NOTE:  These can be embedded within .deb, .rpm or other packages.
+NOTE:  Self-signed certificates are not valid under any circumstances.
+
+NOTE: https://blog.joeymasip.com/django-project-apps-structure-and-folders/
+When installed will create a folder at $PCAS_ROOT/app/module_name with the
+joined contents of module_name.tlz4.blkar(./module/*) with the contents:
+$PCAS_ROOT/app/<module_name>/
+  |
+  |
+  |--> assets     <-- multimedia and data assets
+  |
+  |--> packages   <-- symlinks to apps installed in $PCAS_ROOT/bin
+  |
+  |--> cert       <-- the certificate(s) from the module package
+  |
+  |--> docs
+  |       |--> <various docs>
+  |       |--> LICENSE/COPYING/README,etc
+  |
+  |--> live       <-- The location of the actual module files
+
+
+Optionally, a "dev" and "test" folder may be under $PCAS_ROOT.app/<module_name>
+if development or testing builds of the module are available on the system.
+
+The certificate will be used for all HTTPS requests served by this Django
+module.
+
+NOTE: The default location for $PCAS_ROOT is /opt/pcas on Linux,
+    /n/pcas on Plan9.  Plan9 is unsupported.  It's use is currently entirely
+    experimental.
+NOTE: All code from Project Celadon is licensed as GPLv3 or AGPLv3, whichever
+is best fit.  However, third party sources may use different licenses.
