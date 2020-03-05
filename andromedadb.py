@@ -63,9 +63,11 @@ class AndromedaDB:
             data = None
             with open(serial, 'rb') as file:
                 data = pickle.load( file )
-            #TODO: Need to extract the 'data' poriton and verify it's hash,
-            # returning only the data
-            return data
+            data_data = data['data']
+            if hashlib.sha256(str(data['data']).encode()).hexdigest() == data['digest']:
+                return(data['data'])
+            else:
+                return None
 
 
     class Table:
