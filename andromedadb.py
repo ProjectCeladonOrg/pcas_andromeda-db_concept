@@ -41,33 +41,29 @@ class AndromedaDB:
             pass
 
 
-        def insert(self, title, data):
-            print("\r\n>> INSERT -------------------------------------------------")
-            serial = 'doc_' + str(uuid.uuid4())
-            encoded_data = dict_to_bin(data)
-            print("encoded data: ", encoded_data)
-            doc_hash = hashlib.sha256(encoded_data).digest()
-            doc_digest = hashlib.sha256(encoded_data).hexdigest()
-            doc_record = {'serial':serial, 'title': title, 'data':data, 'hash': doc_hash, 'nonce': gen_nonce()}
-            # TODO: pickles must be signed! probably via app.pcas_crypto
-            pickle.dump(doc_record, open(serial, 'wb'))
-            return {'serial': serial, 'digest': doc_digest}
+        def insert(self, name, data):
+            # Init document structure, generate and add random UUID
+            doc_serial = 'doc_' + str(uuid.uuid4())
+            doc_dict = { 'serial' : doc_serial }
+            # Insert file name
+            doc_dict['name'] = name
+            # Add data in JSON format to document
+            doc_dict['data'] = json.dumps(data)
+            # Binarize and hash the content of 'data'
+            doc_digest = hashlib.sha256(str(doc_dict['data']).encode()).hexdigest()
+            doc_dict['digest'] = doc_digest
+            # Let's make a pickle!
+            with open(doc_serial, 'wb') as file:
+                 pickle.dump(doc_dict, file)
+            return {'serial': doc_serial, 'digest': doc_digest}
 
 
         def extract(self, serial):
-            print("\r\n>> EXTRACT ------------------------------------------------")
             #TODO: accept either title or serial as input to exctact a document
-            print("string type:", type(serial) )
-            print("string contents:", serial )
             data = None
-            #with open(serial, 'rb') as file:
-            #    data = bin_to_dict( pickle.load( file ) )
-            #data_digest = data[hash]
-            #data.pop('serial')
-            #data.pop('hash')
-            # Test that hash matches data...
-            #print('Data after read: ', data)
-            #encoded_data = str(data)
+            with open(serial, 'rb') as file:
+                data = pickle.load( file )
+            return data
 
 
     class Table:
