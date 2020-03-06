@@ -18,10 +18,6 @@ def dict_to_bin(the_dict):
     return blob_data
 
 
-def bin_to_dict(the_binary):
-    return json.loads(str(the_binary).decode())
-
-
 def gen_nonce():
     crypto_thing = SystemRandom()
     return crypto_thing.randrange(17179869184)
@@ -35,6 +31,7 @@ class AndromedaDB:
 
 
     class Document:
+
         serial = 'doc_' + str(uuid.uuid4())
 
         def __init__(self):
