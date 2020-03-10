@@ -26,23 +26,47 @@ def gen_nonce():
     crypto_thing = SystemRandom()
     return crypto_thing.randrange(17179869184)
 
+def hash_data( data_to_hash):
+    return hashlib.sha256(str(data_to_hash).encode()).hexdigest()
+
 
 class AndromedaDB:
     nonce = 99999999999
 
-    def gen_nonce():
-        return 1
-
-
     class Document:
-
+        doc_data = OOBTree()
+        file_mode = 'wb+'
+        file_name = ''
+        file_object = None
         serial = 'doc_' + str(uuid.uuid4())
 
-        def __init__(self):
+        def __init__(self, fname, mode):
+            self.file_name = fname
+            self.file_mode = mode
+            self.file_object = open(self.file_name, self.file_mode)
+
+        # DISCUSSION: Save internally, or present the data to be saved to a
+        # microservice withint the PCAS ecosystem?
+        def save(self, fname=self.file_name):
+            self.file_name = fname
+            # If a file is already open...
+            if self.file_object:
+                # Do some stuff
+                # update access time, and modified time
+                # parse existing data and append current data, the write
+                pass
+            else:
+                # If not, open the file.
+                self.file_object = (self.file_name, self.file_mode)
+                # Update atime, ctime, and mtime
+                # write data
+
+
+        def load(self):
             pass
 
 
-        def insert(self, name, data):
+        def insert(self, key, data):
             doc_btree = OOBTree()
             # Init document structure, generate and add random UUID
             doc_serial = 'doc_' + str(uuid.uuid4())
@@ -50,21 +74,17 @@ class AndromedaDB:
             doc_digest = hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest()
             # Build the document
             doc_btree.update({
-                'atime:'
-                'serial' : doc_serial,
-                'name': name,
+                'atime': seconds_since_epoch,
+                'ctime': '',
+                'serial': doc_serial,
                 'data': json.dumps(data),
-                'digest': doc_digest,
-                'modified': datetime.datetime.utcnow()
+                'digest': hash_data(doc_btree['data']),
+                'mtime': datetime.datetime.utcnow()
                 })
-            # Let's make a pickle!
-            #TODO: Replace with app.pcas_pickler calls
-            with open(doc_serial, 'wb') as file:
-                 pickle.dump(doc_btree, file)
-            return {'serial': doc_serial, 'digest': doc_digest}
+            return doc_btree
 
 
-        def extract(self, serial):
+        def extract(self, target, target_type):
             #TODO: accept either title or serial as input to exctact a document
             doc_btree = OOBTree()
             #TODO: Replace with app.pcas_pickler calls
