@@ -85,28 +85,17 @@ class AndromedaDB:
             return self.doc_btree
 
 
-        def extract(self, target, target_type):
-            #TODO: accept either title or serial as input to exctact a document
-            doc_btree = OOBTree()
-            #TODO: Replace with app.pcas_pickler calls
-            with open(serial, 'rb') as file:
-                doc_btree = pickle.load( file )
-            doc_data = list(doc_btree.values('data'))
-            # NOTE: Returns values from position 'digest', to the end.  Needs a little trimming
-            doc_digest = list(doc_btree.values('digest'))
-            doc_digest = str().join(doc_digest[:1])
-
-            print("DATA .   : ", doc_data)
-            print("DIGEST   : ", doc_digest)
-            print("T(DIGEST): ", type(doc_digest))
-            verify_digest = hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest()
-            print("HASHLIB  : ", verify_digest)
-            print("T(HASHLIB): ", type(verify_digest))
-
-            if hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest() == doc_digest:
-                return(doc_data)
+        # target refers to the actual value of the data to base a retreival on
+        # target_type referst to 1 of either 'key' or 'value'
+        def extract(self, target, target_type='key'):
+            ret_val = None
+            if target_type == 'key':
+                ret_val = self.doc_btree.has_key(target)
+            elif target_type == 'value':
+                ret_val = self.doc_btree.values(target)
             else:
-                return None
+                ret_val = -1
+            return ret_val
 
 
         def query(self, intent, term):
@@ -115,7 +104,6 @@ class AndromedaDB:
 
         def delete(self, serial):
             pass
-
 
     class Table:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle

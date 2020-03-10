@@ -1,5 +1,6 @@
 # TODO: This does not conform to PEP or Org standards; Will fix before FST
 import andromedadb
+from BTrees import OOBTree
 import hashlib
 import json
 from random import SystemRandom
@@ -12,7 +13,7 @@ print(">> BEGINNING TEST -----------------------------------------------------")
 crypto_thing = SystemRandom()
 blah_doc = {
     'module': 'pcas_core',
-    'mdep': None,
+    'mdep': 'pcas_core',
     'odep':'python3, pip3, django',
     'tags':'test,red,99,bogus'
 }
@@ -23,5 +24,5 @@ doc_vitals = testDoc.insert("pcas_test", blah_doc)
 print('RESULT: ', doc_vitals)
 
 print("\r\n\r\n>> EXTRACTING RECORD ------------------------------------------")
-doc_read = testDoc.extract(doc_vitals["serial"])
+doc_read = testDoc.extract('data', 'key')
 print('RESULT: ', doc_read)
