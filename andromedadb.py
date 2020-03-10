@@ -34,7 +34,7 @@ class AndromedaDB:
     nonce = 99999999999
 
     class Document:
-        doc_data = OOBTree()
+        doc_btree = OOBTree()
         file_mode = 'wb+'
         file_name = ''
         file_object = None
@@ -67,20 +67,16 @@ class AndromedaDB:
 
 
         def insert(self, key, data):
-            doc_btree = OOBTree()
-            # Init document structure, generate and add random UUID
-            doc_serial = 'doc_' + str(uuid.uuid4())
-            # Binarize and hash the content of 'data'
-            doc_digest = hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest()
-            # Build the document
+            # Build the document and add it to data key values
             doc_btree.update({
                 'atime': seconds_since_epoch,
                 'ctime': '',
-                'serial': doc_serial,
+                'serial': str(uuid.uuid4()),
                 'data': json.dumps(data),
                 'digest': hash_data(doc_btree['data']),
                 'mtime': datetime.datetime.utcnow()
                 })
+
             return doc_btree
 
 
