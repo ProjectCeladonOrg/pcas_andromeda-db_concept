@@ -1,22 +1,26 @@
+# NOW WITH B-TREES!!
+# https://btrees.readthedocs.io/en/latest/
+
+from BTrees.OOBTree import OOBTree
 import datetime
 import hashlib
 import json
 import pickle
 from random import SystemRandom
 import uuid
-import zlib
 
 
-#TODO: Replace with app.pcas_pickler calls
-def dict_to_bin(the_dict):
-    #str = json.dumps(the_dict)
-    #binary = ' '.join(format(ord(letter), 'b') for letter in str)
-    #return binary
-    # Convert to json
-    json_data = json.dumps(the_dict)
-    blob_data = str(json_data).encode()
-    return blob_data
+# =================================================================================================================== #
+# PROBLEMS:
+# 1. Writes to source dir instead of a dir defined by env var or passed string
+# 2. Writes a new pickle for every doc without anyway to track the contents of each
+# =================================================================================================================== #
 
+def seconds_since_epoch():
+    t_now = datetime.datetime.utcnow()
+    t_epoch = datetime.datetime(2016,2,26,6,45)
+    t_detla = (t_now - t_epoch).seconds
+    return t_delta
 
 def gen_nonce():
     crypto_thing = SystemRandom()
@@ -39,32 +43,57 @@ class AndromedaDB:
 
 
         def insert(self, name, data):
+            doc_btree = OOBTree()
             # Init document structure, generate and add random UUID
             doc_serial = 'doc_' + str(uuid.uuid4())
-            doc_dict = { 'serial' : doc_serial }
-            # Insert file name
-            doc_dict['name'] = name
-            # Add data in JSON format to document
-            doc_dict['data'] = json.dumps(data)
             # Binarize and hash the content of 'data'
-            doc_digest = hashlib.sha256(str(doc_dict['data']).encode()).hexdigest()
-            doc_dict['digest'] = doc_digest
+            doc_digest = hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest()
+            # Build the document
+            doc_btree.update({
+                'atime:'
+                'serial' : doc_serial,
+                'name': name,
+                'data': json.dumps(data),
+                'digest': doc_digest,
+                'modified': datetime.datetime.utcnow()
+                })
             # Let's make a pickle!
+            #TODO: Replace with app.pcas_pickler calls
             with open(doc_serial, 'wb') as file:
-                 pickle.dump(doc_dict, file)
+                 pickle.dump(doc_btree, file)
             return {'serial': doc_serial, 'digest': doc_digest}
 
 
         def extract(self, serial):
             #TODO: accept either title or serial as input to exctact a document
-            data = None
+            doc_btree = OOBTree()
+            #TODO: Replace with app.pcas_pickler calls
             with open(serial, 'rb') as file:
-                data = pickle.load( file )
-            data_data = data['data']
-            if hashlib.sha256(str(data['data']).encode()).hexdigest() == data['digest']:
-                return(data['data'])
+                doc_btree = pickle.load( file )
+            doc_data = list(doc_btree.values('data'))
+            # NOTE: Returns values from position 'digest', to the end.  Needs a little trimming
+            doc_digest = list(doc_btree.values('digest'))
+            doc_digest = str().join(doc_digest[:1])
+
+            print("DATA .   : ", doc_data)
+            print("DIGEST   : ", doc_digest)
+            print("T(DIGEST): ", type(doc_digest))
+            verify_digest = hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest()
+            print("HASHLIB  : ", verify_digest)
+            print("T(HASHLIB): ", type(verify_digest))
+
+            if hashlib.sha256(bytes(list(doc_btree.values('data')))).hexdigest() == doc_digest:
+                return(doc_data)
             else:
                 return None
+
+
+        def query(self, intent, term):
+            pass
+
+
+        def delete(self, serial):
+            pass
 
 
     class Table:
