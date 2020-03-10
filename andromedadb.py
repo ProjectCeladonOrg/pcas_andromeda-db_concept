@@ -10,21 +10,17 @@ from random import SystemRandom
 import uuid
 
 
-# =================================================================================================================== #
-# PROBLEMS:
-# 1. Writes to source dir instead of a dir defined by env var or passed string
-# 2. Writes a new pickle for every doc without anyway to track the contents of each
-# =================================================================================================================== #
-
 def seconds_since_epoch():
     t_now = datetime.datetime.utcnow()
     t_epoch = datetime.datetime(2016,2,26,6,45)
-    t_detla = (t_now - t_epoch).seconds
+    t_delta = (t_now - t_epoch).seconds
     return t_delta
+
 
 def gen_nonce():
     crypto_thing = SystemRandom()
     return crypto_thing.randrange(17179869184)
+
 
 def hash_data( data_to_hash):
     return hashlib.sha256(str(data_to_hash).encode()).hexdigest()
@@ -38,17 +34,26 @@ class AndromedaDB:
         file_mode = 'wb+'
         file_name = ''
         file_object = None
-        serial = 'doc_' + str(uuid.uuid4())
+        record_serial = 'doc_' + str(uuid.uuid4())
 
         def __init__(self, fname, mode):
             self.file_name = fname
             self.file_mode = mode
             self.file_object = open(self.file_name, self.file_mode)
+            self.doc_btree.update({
+                'atime': 0,
+                'ctime': 0,
+                'serial': '',
+                'data': {},
+                'digest': '',
+                'mtime': 0
+                })
 
         # DISCUSSION: Save internally, or present the data to be saved to a
         # microservice withint the PCAS ecosystem?
-        def save(self, fname=self.file_name):
-            self.file_name = fname
+        def save(self, fname=None):
+            if fname:
+                self.file_name = fname
             # If a file is already open...
             if self.file_object:
                 # Do some stuff
@@ -68,16 +73,16 @@ class AndromedaDB:
 
         def insert(self, key, data):
             # Build the document and add it to data key values
-            doc_btree.update({
-                'atime': seconds_since_epoch,
-                'ctime': '',
+            t_delta = seconds_since_epoch()
+            self.doc_btree.update({
+                'atime': t_delta,
+                'ctime': t_delta,
                 'serial': str(uuid.uuid4()),
                 'data': json.dumps(data),
-                'digest': hash_data(doc_btree['data']),
-                'mtime': datetime.datetime.utcnow()
+                'digest': hash_data(self.doc_btree['data']),
+                'mtime': t_delta
                 })
-
-            return doc_btree
+            return self.doc_btree
 
 
         def extract(self, target, target_type):

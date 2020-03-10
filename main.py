@@ -6,7 +6,7 @@ from random import SystemRandom
 import uuid
 
 
-testDoc = andromedadb.AndromedaDB.Document()
+testDoc = andromedadb.AndromedaDB.Document('modules.pdb', 'wb+')
 
 print(">> BEGINNING TEST -----------------------------------------------------")
 crypto_thing = SystemRandom()
