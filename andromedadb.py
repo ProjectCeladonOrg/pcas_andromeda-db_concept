@@ -52,33 +52,13 @@ class AndromedaDB:
                 'mtime': 0
             })
 
-        # DISCUSSION: Save internally, or present the data to be saved to a
-        # microservice within the PCAS ecosystem?
-        def save(self, fname=None):
-            if fname:
-                self.file_name = fname
-            # If a file is already open...
-            if self.file_object:
-                # Do some stuff
-                # update access time, and modified time
-                # parse existing data and append current data, the write
-                pass
-            else:
-                # If not, open the file.
-                self.file_object = (self.file_name, self.file_mode)
-                # Update atime, ctime, and mtime
-                # write data
-
-        def load(self):
-            pass
-
         def insert(self, key, data):
             # Build the document and add it to data key values
             t_delta = seconds_since_epoch()
             self.doc_btree.update({
                 'atime': t_delta,
                 'ctime': t_delta,
-                'serial': str(uuid.uuid4()),
+                'serial': 'doc_' + str(uuid.uuid4()),
                 'data': json.dumps(data),
                 'digest': hash_data(self.doc_btree['data']),
                 'mtime': t_delta
@@ -107,6 +87,8 @@ class AndromedaDB:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle
         # and call it good enough, even in production.  The use case for this
         # is likely a small data set (< 20,000 records)
+        # ... or maybe this will be a hash table.  This will evolve when a clear
+        # use case is established.
         serial = 'tab_' + str(uuid.uuid4())
 
         def __init__(self):
@@ -129,6 +111,8 @@ class AndromedaDB:
         def __init__(self):
             pass
 
+    # NOTE: Vertex is a pointer to other objects.  It does not contain the
+    # object(s) it references
     class Vertex:
         """
         A dict with 'base': '<serial>', 'edge':('edge_1','edge_2','edge_n'),
@@ -147,26 +131,28 @@ class AndromedaDB:
         WITHOUT skipping priorities between connections.
         See doc/Allowed Vertex Relationships.odg for an illustration
         """
-        serial = 'ver_' + str(uuid.uuid4())
-        vertex_dict = {}
+        vertex_serial = 'ver_' + str(uuid.uuid4())
+        vertex_dict = {'atime': None,
+            'base': '',
+            'ctime': None,
+            'label': '',
+            'mtime': None,
+            'priority':0,
+            'serial': ''
+            }
 
         def __init__(self):
             pass
 
-        def create(self, object_label=None,
-                   object_serial, object, object_priority):
-            self.vertex_dict.update('atime') = seconds_since_epoch()
-            self.vertex_dict.update('base') = object_serial
-            self.vertex_dict.update('ctime') = self.vertex_dict['atime']
-            self.vertex_dict.update('label') = object_label
-            self.vertex_dict.update('mtime') = self.vertex_dict['atime']
-            self.vertex_dict.update('object') = object
-            self.vertex_dict.update('priority') = int(object_priority)
-            self.vertex_dict.update('serial') = self.serial
-            file_path = AndromedaDB.db_path + '/' + self.serial
-            ret_val = pickle.dump(file_path, self.vertex_dict)
-            print('vertex retval ', ret_val)
-            return ret_val
+        def create(self, object_serial, object_priority, object_label=None):
+            self.vertex_dict['atime'] = seconds_since_epoch()
+            self.vertex_dict['base'] = object_serial
+            self.vertex_dict['ctime'] = self.vertex_dict['atime']
+            self.vertex_dict['label'] = object_label
+            self.vertex_dict['mtime'] = self.vertex_dict['atime']
+            self.vertex_dict['priority'] = int(object_priority)
+            self.vertex_dict['serial'] = self.vertex_serial
+            return self.vertex_dict
 
     class Collection:
         serial = 'col_' + str(uuid.uuid4())
