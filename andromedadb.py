@@ -50,7 +50,7 @@ class AndromedaDB:
                 })
 
         # DISCUSSION: Save internally, or present the data to be saved to a
-        # microservice withint the PCAS ecosystem?
+        # microservice within the PCAS ecosystem?
         def save(self, fname=None):
             if fname:
                 self.file_name = fname
@@ -87,6 +87,8 @@ class AndromedaDB:
 
         # target refers to the actual value of the data to base a retreival on
         # target_type referst to 1 of either 'key' or 'value'
+        # NOTE: It occurred to me on 2020-03-11 @ 12:47 UTC that in our use
+        # case query and extract are essentially the same.  Removed query.
         def extract(self, target, target_type='key'):
             ret_val = None
             if target_type == 'key':
@@ -98,12 +100,9 @@ class AndromedaDB:
             return ret_val
 
 
-        def query(self, intent, term):
-            pass
-
-
         def delete(self, serial):
             pass
+
 
     class Table:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle
