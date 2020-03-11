@@ -30,6 +30,15 @@ class AndromedaDB:
     nonce = 0
     db_path = '.'
 
+    # It was decided that a DB should be responsible for it's own transactions.
+    # Writes must be committed (synchronized) before passing on data.
+    def save(fname, payload):
+
+        pass
+
+    def load():
+        pass
+
     class Document:
         doc_btree = OOBTree()
         file_mode = 'wb+'
