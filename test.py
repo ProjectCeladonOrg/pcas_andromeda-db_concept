@@ -25,7 +25,7 @@ doc_vitals = testDoc.insert("pcas_test", blah_doc)
 print('RESULT: ', doc_vitals)
 
 print("\r\n\r\n>> EXTRACTING RECORD ------------------------------------------")
-doc_read = testDoc.extract('data', 'key')
+doc_read = testDoc.extract( doc_vitals['serial'], 'data', 'key')
 print('RESULT: ', doc_read)
 
 print("\r\n\r\n>> CREATING VERTEX --------------------------------------------")
