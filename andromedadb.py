@@ -4,6 +4,7 @@
 from BTrees.OOBTree import OOBTree
 import datetime
 import hashlib
+import gzip
 import json
 import os
 import pickle
@@ -35,7 +36,7 @@ class AndromedaDB:
     # Writes must be committed (synchronized) before passing on data.
     def save(fname, payload):
         object_blob = None
-        with open(fname, 'wb') as object_file:
+        with gzip.open(fname, 'wb') as object_file:
             pickle.dump(payload, object_file)
         return True
 
@@ -43,9 +44,10 @@ class AndromedaDB:
     # pre-determined before defining this variable.
     def load(fname):
         object_blob = None
-        with open(fname, 'rb') as object_file:
+        with gzip.open(fname, 'rb') as object_file:
             object_blob = pickle.load(object_file)
         return object_blob
+
 
     class Document:
         doc_btree = OOBTree()
@@ -66,6 +68,7 @@ class AndromedaDB:
                 'serial': '',
                 'data': {},
                 'digest': '',
+                'codex_doc': 1,
                 'mtime': 0
             })
 
@@ -154,6 +157,7 @@ class AndromedaDB:
         vertex_serial = 'ver_' + str(uuid.uuid4())
         vertex_dict = {'atime': None,
                        'base': '',
+                       'codex_ver': 1,
                        'ctime': None,
                        'label': '',
                        'mtime': None,

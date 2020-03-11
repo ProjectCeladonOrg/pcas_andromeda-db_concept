@@ -14,8 +14,9 @@ print(">> BEGINNING TEST -----------------------------------------------------")
 crypto_thing = SystemRandom()
 blah_doc = {
     'module': 'pcas_core',
-    'mdep': 'pcas_core',
-    'odep':'python3, pip3, django',
+    'mdep': ['pcas_core'],
+    'odep':['python3', 'pip3', 'django'],
+    'pdep': ['BTrees'],
     'tags':'test,red,99,bogus'
 }
 print('SAMPLE: ', blah_doc)
