@@ -1,5 +1,4 @@
 Hydrogen@2.14.0
-atom-beautify@0.33.4
 autocomplete-python@1.16.0
 busy-signal@2.0.1
 file-icons@2.1.39
