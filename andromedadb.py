@@ -47,7 +47,6 @@ class AndromedaDB:
             object_blob = pickle.load(object_file)
         return object_blob
 
-
     class Document:
         doc_btree = OOBTree()
         file_mode = 'wb+'
@@ -131,9 +130,39 @@ class AndromedaDB:
             (ambiguous)     simple
             (tree)          root, branch
         """
-        serial = 'edg_' + str(uuid.uuid4())
+        edg_dict = {
+            'codex_edg': 1,
+            'serial': '',
+            'type': '',
+            'vertex': {}
+        }
+        edg_serial = 'edg_' + str(uuid.uuid4())
 
         def __init__(self):
+            pass
+
+        # This whole thing is a fuster cluck...
+        def create(self, edg_type, vertices):
+            # Investigate vertices.  Should have parent/child field.
+            if vertices == 'directed':
+                self.edg_dict['type'] = 'directed'
+                if isinstance(vertices, dict):
+                    print(":: It's a dictionary.  Yay")
+                else:
+                    print(":: It's a {t}, not a dictionary.".format(
+                        t=type(vertices)))
+                self.edg_dict['vertex'] = None
+            elif vertices == 'nondirected':
+                self.edg_dict['type'] = 'nondirected'
+                self.edg_dict['vertex'] = None
+            elif vertices == 'tree':
+                self.edg_dict['type'] = 'tree'
+                self.edg_dict['vertex'] = None
+            else:
+                self.edg_dict['type'] = 'null'
+                self.edg_dict['vertex'] = None
+
+        def destroy(self, edg_serial):
             pass
 
     # NOTE: Vertex is a pointer to other objects.  It does not contain the
@@ -161,6 +190,7 @@ class AndromedaDB:
                        'base': '',
                        'codex_ver': 1,
                        'ctime': None,
+                       'edges': [],
                        'label': '',
                        'mtime': None,
                        'priority': 0,
