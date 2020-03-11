@@ -12,7 +12,7 @@ import uuid
 
 def seconds_since_epoch():
     t_now = datetime.datetime.utcnow()
-    t_epoch = datetime.datetime(2016,2,26,6,45)
+    t_epoch = datetime.datetime(2016, 2, 26, 6, 45)
     t_delta = (t_now - t_epoch).seconds
     return t_delta
 
@@ -22,12 +22,13 @@ def gen_nonce():
     return crypto_thing.randrange(17179869184)
 
 
-def hash_data( data_to_hash):
+def hash_data(data_to_hash):
     return hashlib.sha256(str(data_to_hash).encode()).hexdigest()
 
 
 class AndromedaDB:
-    nonce = 99999999999
+    nonce = 0
+    db_path = '.'
 
     class Document:
         doc_btree = OOBTree()
@@ -36,10 +37,12 @@ class AndromedaDB:
         file_object = None
         record_serial = 'doc_' + str(uuid.uuid4())
 
-        def __init__(self, fname, mode):
+        def __init__(self, fname=None, mode=None):
             self.file_name = fname
             self.file_mode = mode
-            self.file_object = open(self.file_name, self.file_mode)
+            if self.file_name:
+                if self.file_mode:
+                    self.file_object = open(self.file_name, self.file_mode)
             self.doc_btree.update({
                 'atime': 0,
                 'ctime': 0,
@@ -47,7 +50,7 @@ class AndromedaDB:
                 'data': {},
                 'digest': '',
                 'mtime': 0
-                })
+            })
 
         # DISCUSSION: Save internally, or present the data to be saved to a
         # microservice within the PCAS ecosystem?
@@ -66,10 +69,8 @@ class AndromedaDB:
                 # Update atime, ctime, and mtime
                 # write data
 
-
         def load(self):
             pass
-
 
         def insert(self, key, data):
             # Build the document and add it to data key values
@@ -81,14 +82,14 @@ class AndromedaDB:
                 'data': json.dumps(data),
                 'digest': hash_data(self.doc_btree['data']),
                 'mtime': t_delta
-                })
+            })
             return self.doc_btree
-
 
         # target refers to the actual value of the data to base a retreival on
         # target_type referst to 1 of either 'key' or 'value'
         # NOTE: It occurred to me on 2020-03-11 @ 12:47 UTC that in our use
         # case query and extract are essentially the same.  Removed query.
+
         def extract(self, target, target_type='key'):
             ret_val = None
             if target_type == 'key':
@@ -99,10 +100,8 @@ class AndromedaDB:
                 ret_val = -1
             return ret_val
 
-
         def delete(self, serial):
             pass
-
 
     class Table:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle
@@ -112,7 +111,6 @@ class AndromedaDB:
 
         def __init__(self):
             pass
-
 
     class Edge:
         """
@@ -130,7 +128,6 @@ class AndromedaDB:
 
         def __init__(self):
             pass
-
 
     class Vertex:
         """
@@ -151,11 +148,25 @@ class AndromedaDB:
         See doc/Allowed Vertex Relationships.odg for an illustration
         """
         serial = 'ver_' + str(uuid.uuid4())
-
+        vertex_dict = {}
 
         def __init__(self):
             pass
 
+        def create(self, object_label=None,
+                   object_serial, object, object_priority):
+            self.vertex_dict.update('atime') = seconds_since_epoch()
+            self.vertex_dict.update('base') = object_serial
+            self.vertex_dict.update('ctime') = self.vertex_dict['atime']
+            self.vertex_dict.update('label') = object_label
+            self.vertex_dict.update('mtime') = self.vertex_dict['atime']
+            self.vertex_dict.update('object') = object
+            self.vertex_dict.update('priority') = int(object_priority)
+            self.vertex_dict.update('serial') = self.serial
+            file_path = AndromedaDB.db_path + '/' + self.serial
+            ret_val = pickle.dump(file_path, self.vertex_dict)
+            print('vertex retval ', ret_val)
+            return ret_val
 
     class Collection:
         serial = 'col_' + str(uuid.uuid4())
@@ -163,14 +174,11 @@ class AndromedaDB:
         def __init__(self):
             pass
 
-
     class Assimilation:
         serial = 'ass_' + str(uuid.uuid4())
 
-
         def __init__(self):
             pass
-
 
     class Hyperlink:
         serial = 'hyp_' + str(uuid.uuid4())
@@ -178,13 +186,11 @@ class AndromedaDB:
         def __init__(self):
             pass
 
-
     class Block:
         serial = 'blo_' + str(uuid.uuid4())
 
         def __init__(self):
             pass
-
 
     class Chain:
         serial = 'cha_' + str(uuid.uuid4())
