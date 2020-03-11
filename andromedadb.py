@@ -1,5 +1,4 @@
-# NOW WITH B-TREES!!
-# https://btrees.readthedocs.io/en/latest/
+# andromedadb.py
 
 from BTrees.OOBTree import OOBTree
 import datetime
@@ -103,8 +102,11 @@ class AndromedaDB:
                 ret_val = -1
             return ret_val
 
-        def delete(self, serial):
-            pass
+        # It might be better to make these methods call an AndromedaDB.delete
+        def destroy(self, object_serial):
+            object_blob = AndromedaDB.load(object_serial)
+            os.remove(object_serial)
+            return object_blob
 
     class Table:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle
