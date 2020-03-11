@@ -1,10 +1,11 @@
-# NOW WITH B-TREES!!
-# https://btrees.readthedocs.io/en/latest/
+# andromedadb.py
 
 from BTrees.OOBTree import OOBTree
 import datetime
 import hashlib
+import gzip
 import json
+import os
 import pickle
 from random import SystemRandom
 import uuid
@@ -30,6 +31,23 @@ class AndromedaDB:
     nonce = 0
     db_path = '.'
 
+    # It was decided that a DB should be responsible for it's own transactions.
+    # Writes must be committed (synchronized) before passing on data.
+    def save(fname, payload):
+        object_blob = None
+        with gzip.open(fname, 'wb') as object_file:
+            pickle.dump(payload, object_file)
+        return True
+
+    # This totally will not fly in C or Rust.  Type will need to be
+    # pre-determined before defining this variable.
+    def load(fname):
+        object_blob = None
+        with gzip.open(fname, 'rb') as object_file:
+            object_blob = pickle.load(object_file)
+        return object_blob
+
+
     class Document:
         doc_btree = OOBTree()
         file_mode = 'wb+'
@@ -49,6 +67,7 @@ class AndromedaDB:
                 'serial': '',
                 'data': {},
                 'digest': '',
+                'codex_doc': 1,
                 'mtime': 0
             })
 
@@ -63,25 +82,31 @@ class AndromedaDB:
                 'digest': hash_data(self.doc_btree['data']),
                 'mtime': t_delta
             })
+            AndromedaDB.save(self.doc_btree['serial'], self.doc_btree)
             return self.doc_btree
 
         # target refers to the actual value of the data to base a retreival on
         # target_type referst to 1 of either 'key' or 'value'
-        # NOTE: It occurred to me on 2020-03-11 @ 12:47 UTC that in our use
-        # case query and extract are essentially the same.  Removed query.
-
-        def extract(self, target, target_type='key'):
+        # NOTE: query will be used to find a specified value when a document
+        # key is not known.  Need to figure out how to keep it from being slow.
+        def extract(self, db_filename, search_target, target_type='key'):
             ret_val = None
+            # Load the DB file
+            object_blob = AndromedaDB.load(db_filename)
+            self.doc_btree = object_blob
             if target_type == 'key':
-                ret_val = self.doc_btree.has_key(target)
+                ret_val = self.doc_btree.has_key(search_target)
             elif target_type == 'value':
-                ret_val = self.doc_btree.values(target)
+                ret_val = self.doc_btree.values(search_target)
             else:
                 ret_val = -1
             return ret_val
 
-        def delete(self, serial):
-            pass
+        # It might be better to make these methods call an AndromedaDB.delete
+        def destroy(self, object_serial):
+            object_blob = AndromedaDB.load(object_serial)
+            os.remove(object_serial)
+            return object_blob
 
     class Table:
         # Honestly, we'll probably just embed an SQLite3 table into a pickle
@@ -133,13 +158,14 @@ class AndromedaDB:
         """
         vertex_serial = 'ver_' + str(uuid.uuid4())
         vertex_dict = {'atime': None,
-            'base': '',
-            'ctime': None,
-            'label': '',
-            'mtime': None,
-            'priority':0,
-            'serial': ''
-            }
+                       'base': '',
+                       'codex_ver': 1,
+                       'ctime': None,
+                       'label': '',
+                       'mtime': None,
+                       'priority': 0,
+                       'serial': ''
+                       }
 
         def __init__(self):
             pass
@@ -152,7 +178,14 @@ class AndromedaDB:
             self.vertex_dict['mtime'] = self.vertex_dict['atime']
             self.vertex_dict['priority'] = int(object_priority)
             self.vertex_dict['serial'] = self.vertex_serial
+            print(":: Writing file ", self.vertex_dict['serial'])
+            AndromedaDB.save(self.vertex_dict['serial'], self.vertex_dict)
             return self.vertex_dict
+
+        def destroy(self, object_serial):
+            object_blob = AndromedaDB.load(object_serial)
+            os.remove(object_serial)
+            return object_blob
 
     class Collection:
         serial = 'col_' + str(uuid.uuid4())
