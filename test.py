@@ -1,7 +1,7 @@
 # test.py
 # TODO: This does not conform to PEP or Org standards; Will fix before FST
 import andromedadb
-from BTrees import OOBTree
+from BTrees.OOBTree import OOBTree
 import hashlib
 import json
 from random import SystemRandom
