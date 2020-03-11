@@ -7,7 +7,8 @@ from random import SystemRandom
 import uuid
 
 
-testDoc = andromedadb.AndromedaDB.Document('modules.pdb', 'wb+')
+testDoc = andromedadb.AndromedaDB.Document()
+testVertex = andromedadb.AndromedaDB.Vertex()
 
 print(">> BEGINNING TEST -----------------------------------------------------")
 crypto_thing = SystemRandom()
@@ -26,3 +27,11 @@ print('RESULT: ', doc_vitals)
 print("\r\n\r\n>> EXTRACTING RECORD ------------------------------------------")
 doc_read = testDoc.extract('data', 'key')
 print('RESULT: ', doc_read)
+
+print("\r\n\r\n>> CREATING VERTEX --------------------------------------------")
+print('... Getting object serial number')
+doc_serial = doc_vitals['serial']
+print('RESULT: ', doc_serial)
+print('... Creating vertex')
+ret_val = testVertex.create(doc_serial, doc_vitals, 1)
+print('RESULT: ', ret_val)
