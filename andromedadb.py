@@ -119,17 +119,6 @@ class AndromedaDB:
             pass
 
     class Edge:
-        """
-         Appends an 'edges':('edge_1','edge_2','edge_n') into the wrapper dict
-         Then creates and edg_<UUID> pickle with the contents:
-         {'type': 'directional | ambiguous | tree(n)',
-            'vertex':('<type>','<vertex_1>'...'<vertex_n>') }
-
-            'type' can be
-            (directional)   parent, child
-            (ambiguous)     simple
-            (tree)          root, branch
-        """
         edg_dict = {
             'codex_edg': 1,
             'serial': '',
@@ -168,23 +157,6 @@ class AndromedaDB:
     # NOTE: Vertex is a pointer to other objects.  It does not contain the
     # object(s) it references
     class Vertex:
-        """
-        A dict with 'base': '<serial>', 'edge':('edge_1','edge_2','edge_n'),
-        Example:
-         {
-            'base': 'doc_2fdd6ce-bf64-44a3-b710-ba77ef6bf58c',
-            'edge': (edg_9e73f43a-32a9-48d4-8abe-8fd127e37530,
-                'edg_3fb991c4-41dc-4581-bd46-f7cbd473a176',
-                'edg_54f93345-a4b9-4523-832d-f1a0edf136c6'),
-            'label': 'locations'
-            'priority': 99
-        }
-        Lower number = higher priority
-        Connecting vertex priority must be equal to (ambiguous edge),
-        or greater than (directional, tree) the vertexes connected to it
-        WITHOUT skipping priorities between connections.
-        See doc/Allowed Vertex Relationships.odg for an illustration
-        """
         vertex_serial = 'ver_' + str(uuid.uuid4())
         vertex_dict = {'atime': None,
                        'base': '',
@@ -217,12 +189,13 @@ class AndromedaDB:
             os.remove(object_serial)
             return object_blob
 
+    # A container for 2 or more documents or (xor) tables so they can become a Vertex
     class Collection:
         serial = 'col_' + str(uuid.uuid4())
 
         def __init__(self):
             pass
-
+    # A container of 2 or more docuements or (inclusive) tables so they can become a Vertex
     class Assimilation:
         serial = 'ass_' + str(uuid.uuid4())
 
