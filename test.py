@@ -33,5 +33,5 @@ print('... Getting object serial number')
 doc_serial = doc_vitals['serial']
 print('RESULT: ', doc_serial)
 print('... Creating vertex')
-ret_val = testVertex.create(doc_serial, doc_vitals, 1)
+ret_val = testVertex.create(doc_serial, 1)
 print('RESULT: ', ret_val)
