@@ -3,6 +3,17 @@
 This is a proof-of-concept of a hypergraph database for storing data for and
 relative to PCAS modules and entities.
 
+## Status
+This project is deprecated.  The vertex store turned out to be costly.  
+PCAS AndromedaDB peaked at around 300K transactions/second.
+Project Celadon's GalaxyDB, which uses filesystem abstraction to store 
+entities, is hosted in a mercurial repo.  GalaxyDB_PoC, in Python, sustains
+1.5M transactions/second on CephFS (60 OSD's) with SMR rotating disks and no
+caching.
+The project is currently unreleased as we are translating to Go.  We expect a
+60x improvement on TPS.
+As always, this project will be released under AGPLv3.
+
 ## Getting Started
 
 This code is for stand-alone testing of concepts, and is designed to "plug-in"
