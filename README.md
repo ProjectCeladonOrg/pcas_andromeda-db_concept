@@ -1,6 +1,6 @@
 # PCAS AndromedaDB (Concept)
 
-This is a proof-of-concept of a hypergraph database for storing data for and
+This ~~is~~ was a proof-of-concept of a hypergraph database for storing data for and
 relative to PCAS modules and entities.
 
 ## Status
