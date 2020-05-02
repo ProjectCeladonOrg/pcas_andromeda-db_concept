@@ -4,7 +4,7 @@ This is a proof-of-concept of a hypergraph database for storing data for and
 relative to PCAS modules and entities.
 
 ## Status
-This project is deprecated.  The vertex store turned out to be costly.  
+This project is abandoned.  The vertex store turned out to be costly.  
 PCAS AndromedaDB peaked at around 300K transactions/second.
 Project Celadon's GalaxyDB, which uses filesystem abstraction to store 
 entities, is hosted in a mercurial repo.  GalaxyDB_PoC, in Python, sustains
