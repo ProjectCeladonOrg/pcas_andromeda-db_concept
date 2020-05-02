@@ -7,7 +7,7 @@ relative to PCAS modules and entities.
 This project is abandoned.  The vertex store turned out to be costly.  
 PCAS AndromedaDB peaked at around 300K transactions/second.
 Project Celadon's GalaxyDB, which uses filesystem abstraction to store 
-entities, is hosted in a mercurial repo.  GalaxyDB_PoC, in Python, sustains
+entities, is hosted in a mercurial repo on bitbucket, and has been tested on Linux and Plan 9.  GalaxyDB_PoC, in Python, sustains
 1.5M transactions/second on CephFS (60 OSD's) with SMR rotating disks and no
 caching.
 The project is currently unreleased as we are translating to Go.  We expect a
