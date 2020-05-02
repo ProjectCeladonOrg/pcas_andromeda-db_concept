@@ -4,14 +4,15 @@ This ~~is~~ was a proof-of-concept of a hypergraph database for storing data for
 relative to PCAS modules and entities.
 
 ## Status
-This project is abandoned.  The vertex store turned out to be costly.  
-PCAS AndromedaDB peaked at around 300K transactions/second.
-Project Celadon's GalaxyDB, which uses filesystem abstraction to store 
-entities, is hosted in a mercurial repo on bitbucket, and has been tested on Linux and Plan 9.  GalaxyDB_PoC, in Python, sustains
-1.5M transactions/second on CephFS (60 OSD's) with SMR rotating disks and no
-caching.
-The project is currently unreleased as we are translating to Go.  We expect a
-60x improvement on TPS.
+This project is abandoned.  The vertex store turned out to be costly.  PCAS AndromedaDB peaked at around 300K transactions/second.  Project Celadon's GalaxyDB, which uses BSON and filesystem abstraction to store entities, is hosted in a mercurial repo on bitbucket, and has been tested on Linux and Plan 9.  GalaxyDB_PoC, in Python, sustains 1.5M transactions/second per host on CephFS (60 OSD's, single host) with SMR rotating disks and no caching.
+The project is currently unreleased as we are translating to Rust.  We expect a 60x improvement on TPS.
+
+Unlike AndromedaDB, GalaxyDB is general purpose, highly tunable, and supports several methods of data import including:
+ * Text: CSV, JSON, YAML, TOML
+ * Binary: BSON, SQLite3, Pickle
+ * StdIn: All of the above
+ * Socket/IP: SQL, Neo4J, Any system that can support Text and Binary formats
+
 As always, this project will be released under AGPLv3.
 
 ## Getting Started
