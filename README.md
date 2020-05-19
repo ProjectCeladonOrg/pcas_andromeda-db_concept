@@ -7,7 +7,7 @@ relative to PCAS modules and entities.
 This project is abandoned, and is left here as a record of our humble beginning.  The vertex store turned out to be costly.  PCAS AndromedaDB (python) peaked at around 300K transactions/second (TPS).  We found that ZODB could achieve 600K TPS so that number was set as our milestone since the datastores of both databases was similar.  AndromedaDB failed to achieve that milestone.  
 
 Project Celadon's GalaxyDB, which uses BSON and filesystem abstraction via 9P to store entities, is hosted in an internal mercurial repo. It will remain hosted internally until 2020.5 because I am now the only contributor.  GalaxyDB_PoC, in Python, sustains 1.1M transactions/second (read/write/append) on CephFS (20 OSD's, three hosts) with SMR rotating disks with SATA SSD caching.
-The project is currently being translated to Go.  A 60x improvement on TPS with the same storage backend is expected.
+The project is currently being translated to Rust.  A 60x improvement on TPS with the same storage backend is expected.
 
 Unlike AndromedaDB, GalaxyDB is general purpose, highly tunable, and supports several methods of data import including:
  * Text: CSV, JSON, YAML, TOML
